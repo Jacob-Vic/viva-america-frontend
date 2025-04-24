@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viva América - Gestão Completa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --text-color: #2d3748;
+      --container-bg: #ffffff;
+      --shadow-color: rgba(0,0,0,0.1);
+      --primary-color: #4a6bdf;
+      --primary-hover: #3a56c4;
+      --secondary-color: #e74c3c;
+      --success-color: #2ecc71;
+      --card-bg: #ffffff;
+      --input-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --dashboard-bg: #f1f5f9;
+      --resumo-card: #4a6bdf;
+      --resumo-text: #ffffff;
+    }
+
+    .dark-mode {
+      --bg-color: #1a202c;
+      --text-color: #f7fafc;
+      --container-bg: #2d3748;
+      --shadow-color: rgba(0,0,0,0.3);
+      --primary-color: #5b7bf0;
+      --primary-hover: #4a6bdf;
+      --secondary-color: #ff6b6b;
+      --success-color: #48bb78;
+      --card-bg: #4a5568;
+      --input-bg: #4a5568;
+      --border-color: #4a5568;
+      --dashboard-bg: #2d3748;
+      --resumo-card: #5b7bf0;
+      --resumo-text: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: all 0.3s ease;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0;
+      background: var(--container-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      color: var(--text-color);
+      font-weight: 700;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 1.8rem;
+    }
+
+    .nav {
+      display: flex;
+      background: var(--dashboard-bg);
+      padding: 0 30px;
+    }
+
+    .nav button {
+      padding: 15px 25px;
+      background: transparent;
+      color: var(--text-color);
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .nav button:hover {
+      color: var(--primary-color);
+      background: rgba(74, 107, 223, 0.1);
+    }
+
+    .nav button.active {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--primary-color);
+    }
+
+    section { 
+      display: none;
+      padding: 30px;
+    }
+    section.active { 
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+      align-items: center;
+    }
+
+    .filtros-group {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--text-color);
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, select, textarea {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-color);
+      width: 100%;
+      transition: all 0.3s;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(74, 107, 223, 0.2);
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    button.secondary {
+      background-color: var(--secondary-color);
+    }
+
+    button.secondary:hover {
+      background-color: #d63b2b;
+    }
+
+    button.success {
+      background-color: var(--success-color);
+    }
+
+    button.ghost {
+      background: transparent;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+
+    button.ghost:hover {
+      background: rgba(74, 107, 223, 0.1);
+    }
+
+    .acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    /* Lista de Registros */
+    .registros-container {
+      margin-top: 30px;
+    }
+
+    .registros-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .ordenacao {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .registros-list {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    .registro-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border-color);
+      transition: all 0.3s;
+    }
+
+    .registro-item:last-child {
+      border-bottom: none;
+    }
+
+    .registro-item:hover {
+      background: rgba(74, 107, 223, 0.05);
+    }
+
+    .registro-empresa {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .registro-valor {
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .registro-vencimento {
+      text-align: center;
+    }
+
+    .registro-status {
+      display: flex;
+      justify-content: center;
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-pendente {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-pago {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .registro-acoes {
+      display: flex;
+      gap: 5px;
+      justify-content: flex-end;
+    }
+
+    .registro-acoes button {
+      padding: 5px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Próximos Vencimentos */
+    .proximos-vencimentos-vertical {
+      margin: 20px 0;
+      background: var(--dashboard-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .proximos-vencimentos-vertical h4 {
+      margin: 0 0 15px 0;
+      color: var(--primary-color);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .proximos-vencimentos-vertical h4 i {
+      margin-right: 10px;
+    }
+
+    .vencimento-card {
+      padding: 15px;
+      margin-bottom: 15px;
+      background: var(--card-bg);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+      transition: transform 0.3s;
+    }
+
+    .vencimento-card:hover {
+      transform: translateX(5px);
+    }
+
+    .vencimento-data, .vencimento-valor {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .vencimento-data {
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 5px;
+    }
+
+    .vencimento-valor {
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .vencimento-valor i.fa-money-bill-wave {
+      color: var(--success-color);
+    }
+
+    .vencimento-valor i.fa-flag, 
+    .vencimento-valor i.fa-flag-usa {
+      margin-left: auto;
+      opacity: 0.8;
+    }
+
+    /* Dashboard */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .dashboard-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    .dashboard-card h3 {
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+    }
+
+    /* Checkbox */
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      width: auto;
+      transform: scale(1.2);
+    }
+
+    /* Dark Mode Toggle */
+    .toggle-dark {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .toggle-dark:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Recorrente Options */
+    .recorrente-options {
+      display: none;
+      margin-top: 10px;
+      padding: 15px;
+      background: var(--dashboard-bg);
+      border-radius: 8px;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .registro-item {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 10px;
+      }
+      
+      .registro-empresa {
+        grid-column: 1 / 3;
+      }
+      
+      .registro-acoes {
+        grid-column: 1 / 3;
+        justify-content: center;
+      }
+      
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        overflow-x: auto;
+        padding: 0 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Viva América - Gestão de Despesas</h1>
+      <button class="toggle-dark" onclick="toggleDarkMode()">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+
+    <div class="nav">
+      <button class="active" onclick="mostrarAba('cadastro')"><i class="fas fa-plus"></i> Nova Despesa</button>
+      <button onclick="mostrarAba('registros')"><i class="fas fa-list"></i> Despesas</button>
+      <button onclick="mostrarAba('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</button>
+    </div>
+
+    <section id="cadastro" class="active">
+      <h2>Adicionar Nova Despesa</h2>
+      <form id="formDespesa">
+        <input type="hidden" id="despesaId">
+        <div class="form-row">
+          <div>
+            <label>Empresa</label>
+            <input type="text" name="empresa" required>
+          </div>
+          <div>
+            <label>Valor</label>
+            <input type="number" name="valor" step="0.01" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Data de Vencimento</label>
+            <input type="date" name="vencimento" id="vencimento" required>
+          </div>
+          <div>
+            <label>Moeda</label>
+            <select name="moeda">
+              <option value="BRL">BRL (R$)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label>Descrição (Opcional)</label>
+          <textarea name="descricao" rows="3"></textarea>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" name="recorrente" id="recorrente" onchange="toggleRecorrenteOptions()">
+          <label for="recorrente">Despesa Recorrente</label>
+        </div>
+        <div class="recorrente-options" id="recorrenteOptions">
+          <label>Quantidade de Repetições</label>
+          <input type="number" name="repeticoes" min="1" value="1">
+          <small>Serão criadas despesas com o mesmo valor e dia de vencimento nos próximos meses</small>
+        </div>
+        <div class="form-actions">
+          <button type="submit"><i class="fas fa-save"></i> Salvar Despesa</button>
+          <button type="button" class="ghost" onclick="cancelarEdicao()" style="display: none;"><i class="fas fa-times"></i> Cancelar</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="registros">
+      <div class="filtros">
+        <div class="filtros-group">
+          <div>
+            <label>De</label>
+            <input type="date" id="filtroInicio">
+          </div>
+          <div>
+            <label>Até</label>
+            <input type="date" id="filtroFim">
+          </div>
+          <button onclick="listarDespesas()"><i class="fas fa-filter"></i> Filtrar</button>
+        </div>
+        <div class="ordenacao">
+          <label>Ordenar por:</label>
+          <select id="ordenacao" onchange="listarDespesas()">
+            <option value="vencimento-asc">Vencimento (Próximos primeiro)</option>
+            <option value="vencimento-desc">Vencimento (Distantes primeiro)</option>
+            <option value="valor-asc">Valor (Menor primeiro)</option>
+            <option value="valor-desc">Valor (Maior primeiro)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="acoes">
+        <button onclick="exportarPDF()"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+        <button onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+      </div>
+      
+      <!-- Área dos Próximos Vencimentos -->
+      <div id="proximos-aba-registros"></div>
+      
+      <div class="registros-container">
+        <div class="registros-header">
+          <h3>Lista de Despesas</h3>
+          <div class="acoes">
+            <button class="success" onclick="marcarTodasComoPagas()"><i class="fas fa-check"></i> Marcar todas como pagas</button>
+          </div>
+        </div>
+        
+        <div class="registros-list">
+          <div class="registro-item" style="background: var(--dashboard-bg); font-weight: 600;">
+            <div class="registro-empresa">Empresa</div>
+            <div class="registro-valor">Valor</div>
+            <div class="registro-vencimento">Vencimento</div>
+            <div class="registro-status">Status</div>
+            <div class="registro-acoes">Ações</div>
+          </div>
+          <div id="listaRegistros">
+            <!-- Preenchido dinamicamente pelo JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dashboard">
+      <h2>Dashboard de Despesas</h2>
+      <div class="filtros">
+        <div class="filtros-group">
+          <div>
+            <label>De</label>
+            <input type="date" id="filtroDashboardInicio">
+          </div>
+          <div>
+            <label>Até</label>
+            <input type="date" id="filtroDashboardFim">
+          </div>
+          <button onclick="desenharGraficos()"><i class="fas fa-sync-alt"></i> Atualizar</button>
+        </div>
+      </div>
+      
+      <div class="acoes">
+        <button onclick="exportarPDF()"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+        <button onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+      </div>
+      
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <h3>Totais por Moeda</h3>
+          <div id="dashboardResumo">
+            <p><strong>Total BRL:</strong> <span id="totalDespesasBRL">R$ 0,00</span></p>
+            <p><strong>Total USD:</strong> <span id="totalDespesasUSD">$ 0.00</span></p>
+            <p><strong>Pendentes BRL:</strong> <span id="totalPendentesBRL">R$ 0,00</span></p>
+            <p><strong>Pendentes USD:</strong> <span id="totalPendentesUSD">$ 0.00</span></p>
+          </div>
+        </div>
+        <div class="dashboard-card">
+          <h3>Próximos Vencimentos</h3>
+          <div id="proximosVencimentos">
+            <!-- Preenchido dinamicamente pelo JavaScript -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="dashboard-grid" style="margin-top: 20px;">
+        <div class="dashboard-card">
+          <h3>Despesas por Empresa</h3>
+          <canvas id="graficoGastos"></canvas>
+        </div>
+        <div class="dashboard-card">
+          <h3>Distribuição por Moeda</h3>
+          <canvas id="graficoPizza"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API_URL = 'https://vivaamerica-backend.onrender.com';
+    let despesas = [];
+    let chartGastos, chartPizza;
+    let ordenacaoAtual = 'vencimento-asc';
+
+    // Configurar datas padrão
+    function configurarDatasPadrao() {
+      const hoje = new Date();
+      const primeiroDiaAno = new Date(hoje.getFullYear(), 0, 1);
+      
+      document.getElementById('filtroInicio').valueAsDate = primeiroDiaAno;
+      document.getElementById('filtroFim').valueAsDate = hoje;
+      document.getElementById('filtroDashboardInicio').valueAsDate = primeiroDiaAno;
+      document.getElementById('filtroDashboardFim').valueAsDate = hoje;
+    }
+
+    // Configurar data de vencimento padrão (data atual)
+    function configurarDataPadrao() {
+      document.getElementById('vencimento').valueAsDate = new Date();
+    }
+
+    // Dark Mode
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.toggle-dark i');
+      if (document.body.classList.contains('dark-mode')) {
+        icon.classList.replace('fa-moon', 'fa-sun');
+        localStorage.setItem('darkMode', 'enabled');
+      } else {
+        icon.classList.replace('fa-sun', 'fa-moon');
+        localStorage.setItem('darkMode', 'disabled');
+      }
+      
+      if (document.getElementById('dashboard').classList.contains('active')) {
+        desenharGraficos();
+      }
+    }
+
+    // Verificar preferência de Dark Mode no carregamento
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark-mode');
+      document.querySelector('.toggle-dark i').classList.replace('fa-moon', 'fa-sun');
+    }
+
+    // Mostrar/ocultar opções de despesa recorrente
+    function toggleRecorrenteOptions() {
+      const recorrente = document.getElementById('recorrente').checked;
+      document.getElementById('recorrenteOptions').style.display = recorrente ? 'block' : 'none';
+    }
+
+    // Mostrar aba selecionada
+    function mostrarAba(id) {
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      
+      document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.nav button[onclick="mostrarAba('${id}')"]`).classList.add('active');
+      
+      if (id === 'registros') listarDespesas();
+      if (id === 'dashboard') desenharGraficos();
+    }
+
+    // Atualizar dados do servidor
+    async function atualizarDados() {
+      try {
+        const response = await fetch(`${API_URL}/despesas`);
+        if (!response.ok) throw new Error('Erro ao carregar despesas');
+        despesas = await response.json();
+      } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao carregar despesas: ' + error.message);
+      }
+    }
+
+    // Formatadores
+    function formatarData(data) {
+      if (!data) return '';
+      const date = new Date(data);
+      return date.toLocaleDateString('pt-BR');
+    }
+
+    function formatarMoeda(valor, moeda) {
+      if (moeda === 'BRL') {
+        return 'R$ ' + valor.toFixed(2).replace('.', ',');
+      } else {
+        return '$ ' + valor.toFixed(2);
+      }
+    }
+
+    // Atualizar próximos vencimentos
+    function atualizarProximosVencimentos() {
+      const hoje = new Date();
+      const proximos = despesas
+        .filter(d => !d.paga && new Date(d.vencimento) >= hoje)
+        .sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento))
+        .slice(0, 2);
+
+      const html = `
+        <h4><i class="fas fa-calendar-alt"></i> PRÓXIMOS VENCIMENTOS</h4>
+        ${proximos.length > 0 ? 
+          proximos.map(d => `
+            <div class="vencimento-card">
+              <div class="vencimento-data">
+                <i class="far fa-calendar"></i> 
+                ${formatarData(d.vencimento)}
+              </div>
+              <div class="vencimento-valor">
+                <i class="fas fa-money-bill-wave"></i> 
+                ${formatarMoeda(d.valor, d.moeda)}
+                ${d.moeda === 'USD' ? 
+                  '<i class="fas fa-flag-usa" title="Dólar Americano"></i>' : 
+                  '<i class="fas fa-flag" title="Real Brasileiro"></i>'}
+              </div>
+            </div>
+          `).join('') : 
+          '<p style="text-align:center;color:var(--text-color);opacity:0.7;">Nenhum vencimento próximo</p>'
+        }
+      `;
+
+      document.getElementById('proximos-aba-registros').innerHTML = html;
+    }
+
+    // Listar despesas com ordenação
+    async function listarDespesas() {
+      const inicio = document.getElementById('filtroInicio').value;
+      const fim = document.getElementById('filtroFim').value;
+      ordenacaoAtual = document.getElementById('ordenacao').value;
+      
+      let filtradas = despesas;
+      if (inicio) filtradas = filtradas.filter(d => new Date(d.vencimento) >= new Date(inicio));
+      if (fim) filtradas = filtradas.filter(d => new Date(d.vencimento) <= new Date(fim));
+      
+      // Aplicar ordenação
+      switch(ordenacaoAtual) {
+        case 'vencimento-asc':
+          filtradas.sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+          break;
+        case 'vencimento-desc':
+          filtradas.sort((a, b) => new Date(b.vencimento) - new Date(a.vencimento));
+          break;
+        case 'valor-asc':
+          filtradas.sort((a, b) => a.valor - b.valor);
+          break;
+        case 'valor-desc':
+          filtradas.sort((a, b) => b.valor - a.valor);
+          break;
+      }
+      
+      // Atualizar a lista de despesas
+      const container = document.getElementById('listaRegistros');
+      container.innerHTML = filtradas.map(d => `
+        <div class="registro-item">
+          <div class="registro-empresa">
+            ${d.recorrente ? '<i class="fas fa-redo" title="Despesa recorrente"></i>' : ''}
+            ${d.empresa}
+            ${d.descricao ? `<small style="display:block;font-weight:400;margin-top:5px;">${d.descricao}</small>` : ''}
+          </div>
+          <div class="registro-valor">${formatarMoeda(d.valor, d.moeda)}</div>
+          <div class="registro-vencimento">${formatarData(d.vencimento)}</div>
+          <div class="registro-status">
+            <span class="status-badge ${d.paga ? 'status-pago' : 'status-pendente'}">
+              ${d.paga ? 'Pago' : 'Pendente'}
+            </span>
+          </div>
+          <div class="registro-acoes">
+            <button onclick="editarDespesa('${d._id}')" title="Editar"><i class="fas fa-edit"></i></button>
+            <button class="secondary" onclick="excluirDespesa('${d._id}')" title="Excluir"><i class="fas fa-trash"></i></button>
+            <button class="${d.paga ? 'ghost' : 'success'}" onclick="marcarComoPaga('${d._id}', ${!d.paga})" title="${d.paga ? 'Marcar como pendente' : 'Marcar como paga'}">
+              <i class="fas fa-${d.paga ? 'undo' : 'check'}"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+      
+      // Atualizar próximos vencimentos (independente do filtro)
+      atualizarProximosVencimentos();
+    }
+
+    // Formulário de despesa
+    document.getElementById('formDespesa').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const despesaId = document.getElementById('despesaId').value;
+      const isEdit = !!despesaId;
+      
+      const dados = {
+        empresa: form.empresa.value,
+        valor: parseFloat(form.valor.value),
+        vencimento: form.vencimento.value,
+        moeda: form.moeda.value,
+        descricao: form.descricao.value,
+        paga: false
+      };
+
+      try {
+        if (isEdit) {
+          await fetch(`${API_URL}/despesas/${despesaId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+          });
+        } else {
+          const response = await fetch(`${API_URL}/despesas`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+          });
+          
+          const novaDespesa = await response.json();
+          
+          if (form.recorrente.checked) {
+            const repeticoes = parseInt(form.repeticoes.value) || 1;
+            const vencimento = new Date(form.vencimento.value);
+            
+            for (let i = 1; i < repeticoes; i++) {
+              const novoVencimento = new Date(vencimento);
+              novoVencimento.setMonth(novoVencimento.getMonth() + i);
+              
+              const dadosRecorrente = {
+                ...dados,
+                vencimento: novoVencimento.toISOString().split('T')[0],
+                recorrente: true
+              };
+              
+              await fetch(`${API_URL}/despesas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosRecorrente)
+              });
+            }
+          }
+        }
+
+        form.reset();
+        document.getElementById('vencimento').valueAsDate = new Date();
+        document.getElementById('despesaId').value = '';
+        document.querySelector('button.ghost').style.display = 'none';
+        document.getElementById('recorrenteOptions').style.display = 'none';
+        
+        await atualizarDados();
+        mostrarAba('registros');
+      } catch (error) {
+        alert('Erro ao salvar despesa: ' + error.message);
+      }
+    });
+
+    function cancelarEdicao() {
+      document.getElementById('formDespesa').reset();
+      document.getElementById('vencimento').valueAsDate = new Date();
+      document.getElementById('despesaId').value = '';
+      document.querySelector('button.ghost').style.display = 'none';
+      document.getElementById('recorrenteOptions').style.display = 'none';
+    }
+
+    async function editarDespesa(id) {
+      const despesa = despesas.find(d => d._id === id);
+      if (!despesa) return;
+
+      const form = document.getElementById('formDespesa');
+      form.empresa.value = despesa.empresa;
+      form.valor.value = despesa.valor;
+      form.vencimento.value = despesa.vencimento.split('T')[0];
+      form.moeda.value = despesa.moeda;
+      form.descricao.value = despesa.descricao || '';
+      
+      document.getElementById('despesaId').value = despesa._id;
+      document.querySelector('button.ghost').style.display = 'inline-block';
+      
+      mostrarAba('cadastro');
+      window.scrollTo(0, 0);
+    }
+
+    async function marcarComoPaga(id, paga) {
+      try {
+        const response = await fetch(`${API_URL}/despesas/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paga })
+        });
+        
+        if (!response.ok) throw new Error('Erro ao atualizar status');
+        
+        await atualizarDados();
+        listarDespesas();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function marcarTodasComoPagas() {
+      if (!confirm('Tem certeza que deseja marcar TODAS as despesas como pagas?')) return;
+      
+      try {
+        const pendentes = despesas.filter(d => !d.paga);
+        
+        for (const despesa of pendentes) {
+          await fetch(`${API_URL}/despesas/${despesa._id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paga: true })
+          });
+        }
+        
+        await atualizarDados();
+        listarDespesas();
+        alert('Todas as despesas foram marcadas como pagas!');
+      } catch (error) {
+        alert('Erro ao atualizar despesas: ' + error.message);
+      }
+    }
+
+    async function excluirDespesa(id) {
+      if (!confirm('Tem certeza que deseja excluir esta despesa?')) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/despesas/${id}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) throw new Error('Erro ao excluir despesa');
+        
+        await atualizarDados();
+        listarDespesas();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // Dashboard e gráficos
+    function desenharGraficos() {
+      const inicio = document.getElementById('filtroDashboardInicio').value;
+      const fim = document.getElementById('filtroDashboardFim').value;
+      
+      let filtradas = despesas;
+      if (inicio) filtradas = filtradas.filter(d => new Date(d.vencimento) >= new Date(inicio));
+      if (fim) filtradas = filtradas.filter(d => new Date(d.vencimento) <= new Date(fim));
+
+      if (chartGastos) chartGastos.destroy();
+      if (chartPizza) chartPizza.destroy();
+
+      // Atualizar resumo
+      const totalBRL = filtradas.filter(d => d.moeda === 'BRL').reduce((sum, d) => sum + d.valor, 0);
+      const totalUSD = filtradas.filter(d => d.moeda === 'USD').reduce((sum, d) => sum + d.valor, 0);
+      const totalPendentesBRL = filtradas.filter(d => !d.paga && d.moeda === 'BRL').reduce((sum, d) => sum + d.valor, 0);
+      const totalPendentesUSD = filtradas.filter(d => !d.paga && d.moeda === 'USD').reduce((sum, d) => sum + d.valor, 0);
+      
+      document.getElementById("totalDespesasBRL").textContent = 'R$ ' + totalBRL.toFixed(2).replace('.', ',');
+      document.getElementById("totalDespesasUSD").textContent = '$ ' + totalUSD.toFixed(2);
+      document.getElementById("totalPendentesBRL").textContent = 'R$ ' + totalPendentesBRL.toFixed(2).replace('.', ',');
+      document.getElementById("totalPendentesUSD").textContent = '$ ' + totalPendentesUSD.toFixed(2);
+
+      // Próximos vencimentos no dashboard
+      const proximosVencimentos = filtradas
+        .filter(d => !d.paga)
+        .sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento))
+        .slice(0, 5);
+      
+      let html = '<ul style="list-style:none;padding:0;">';
+      proximosVencimentos.forEach(d => {
+        html += `
+          <li style="margin-bottom:10px;padding:10px;background:rgba(0,0,0,0.05);border-radius:8px;">
+            <strong>${d.empresa}</strong><br>
+            ${formatarData(d.vencimento)} - ${formatarMoeda(d.valor, d.moeda)}
+          </li>
+        `;
+      });
+      html += '</ul>';
+      document.getElementById('proximosVencimentos').innerHTML = html;
+
+      // Gráfico de barras por mês
+      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dec'];
+      const dadosPorMes = Array(12).fill().map(() => ({ brl: 0, usd: 0 }));
+
+      filtradas.forEach(d => {
+        const mes = new Date(d.vencimento).getMonth();
+        if (d.moeda === 'BRL') {
+          dadosPorMes[mes].brl += d.valor;
+        } else {
+          dadosPorMes[mes].usd += d.valor;
+        }
+      });
+
+      const ctxBarras = document.getElementById('graficoGastos').getContext('2d');
+      chartGastos = new Chart(ctxBarras, {
+        type: 'bar',
+        data: {
+          labels: meses,
+          datasets: [
+            {
+              label: 'BRL',
+              data: dadosPorMes.map(m => m.brl),
+              backgroundColor: '#4a6bdf',
+              borderColor: '#4a6bdf',
+              borderWidth: 1
+            },
+            {
+              label: 'USD',
+              data: dadosPorMes.map(m => m.usd),
+              backgroundColor: '#e74c3c',
+              borderColor: '#e74c3c',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return value.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+                }
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.dataset.label || '';
+                  const value = context.raw || 0;
+                  return `${label}: ${value.toLocaleString('pt-BR', {style: 'currency', currency: context.dataset.label === 'USD' ? 'USD' : 'BRL'})}`;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Gráfico de pizza por moeda
+      const totalPorMoeda = {
+        'BRL': totalBRL,
+        'USD': totalUSD
+      };
+
+      const ctxPizza = document.getElementById('graficoPizza').getContext('2d');
+      chartPizza = new Chart(ctxPizza, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(totalPorMoeda),
+          datasets: [{
+            data: Object.values(totalPorMoeda),
+            backgroundColor: ['#4a6bdf', '#e74c3c'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = Math.round((value / total) * 100);
+                  return `${label}: ${value.toLocaleString('pt-BR', {style: 'currency', currency: label})} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Exportação de dados
+    function exportarExcel() {
+      const inicio = document.getElementById('filtroInicio').value;
+      const fim = document.getElementById('filtroFim').value;
+      
+      let filtradas = despesas;
+      if (inicio) filtradas = filtradas.filter(d => new Date(d.vencimento) >= new Date(inicio));
+      if (fim) filtradas = filtradas.filter(d => new Date(d.vencimento) <= new Date(fim));
+      
+      switch(ordenacaoAtual) {
+        case 'vencimento-asc':
+          filtradas.sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+          break;
+        case 'vencimento-desc':
+          filtradas.sort((a, b) => new Date(b.vencimento) - new Date(a.vencimento));
+          break;
+        case 'valor-asc':
+          filtradas.sort((a, b) => a.valor - b.valor);
+          break;
+        case 'valor-desc':
+          filtradas.sort((a, b) => b.valor - a.valor);
+          break;
+      }
+
+      const wb = XLSX.utils.book_new();
+      const dados = filtradas.map(d => ({
+        Empresa: d.empresa,
+        Valor: d.valor,
+        Moeda: d.moeda,
+        Vencimento: formatarData(d.vencimento),
+        Status: d.paga ? 'Paga' : 'Pendente',
+        Recorrente: d.recorrente ? 'Sim' : 'Não',
+        Descrição: d.descricao || ''
+      }));
+      
+      const ws = XLSX.utils.json_to_sheet(dados);
+      XLSX.utils.book_append_sheet(wb, ws, "Despesas");
+      
+      const totalBRL = filtradas.filter(d => d.moeda === 'BRL').reduce((sum, d) => sum + d.valor, 0);
+      const totalUSD = filtradas.filter(d => d.moeda === 'USD').reduce((sum, d) => sum + d.valor, 0);
+      
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([
+        { 'Total BRL': totalBRL, 'Total USD': totalUSD }
+      ]), "Totais");
+      
+      XLSX.writeFile(wb, `despesas_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+    function exportarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      const inicio = document.getElementById('filtroInicio').value;
+      const fim = document.getElementById('filtroFim').value;
+      
+      let filtradas = despesas;
+      if (inicio) filtradas = filtradas.filter(d => new Date(d.vencimento) >= new Date(inicio));
+      if (fim) filtradas = filtradas.filter(d => new Date(d.vencimento) <= new Date(fim));
+      
+      switch(ordenacaoAtual) {
+        case 'vencimento-asc':
+          filtradas.sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+          break;
+        case 'vencimento-desc':
+          filtradas.sort((a, b) => new Date(b.vencimento) - new Date(a.vencimento));
+          break;
+        case 'valor-asc':
+          filtradas.sort((a, b) => a.valor - b.valor);
+          break;
+        case 'valor-desc':
+          filtradas.sort((a, b) => b.valor - a.valor);
+          break;
+      }
+
+      doc.setFontSize(18);
+      doc.setTextColor(74, 107, 223);
+      doc.text('Relatório de Despesas', 105, 20, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      const periodo = `Período: ${inicio ? formatarData(inicio) : 'Início'} a ${fim ? formatarData(fim) : 'Fim'}`;
+      doc.text(periodo, 105, 30, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setFillColor(74, 107, 223);
+      doc.setTextColor(255, 255, 255);
+      doc.rect(10, 40, 190, 10, 'F');
+      doc.text('Empresa', 15, 45);
+      doc.text('Valor', 100, 45);
+      doc.text('Vencimento', 140, 45);
+      doc.text('Status', 170, 45);
+
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
+      let y = 50;
+      filtradas.forEach(d => {
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+          doc.setFontSize(10);
+          doc.setFillColor(74, 107, 223);
+          doc.setTextColor(255, 255, 255);
+          doc.rect(10, y, 190, 10, 'F');
+          doc.text('Empresa', 15, y+5);
+          doc.text('Valor', 100, y+5);
+          doc.text('Vencimento', 140, y+5);
+          doc.text('Status', 170, y+5);
+          y += 15;
+          doc.setFontSize(9);
+          doc.setTextColor(0, 0, 0);
+        }
+        
+        doc.text(d.empresa, 15, y);
+        doc.text(formatarMoeda(d.valor, d.moeda), 100, y);
+        doc.text(formatarData(d.vencimento), 140, y);
+        doc.text(d.paga ? 'Paga' : 'Pendente', 170, y);
+        y += 7;
+      });
+
+      const totalBRL = filtradas.filter(d => d.moeda === 'BRL').reduce((sum, d) => sum + d.valor, 0);
+      const totalUSD = filtradas.filter(d => d.moeda === 'USD').reduce((sum, d) => sum + d.valor, 0);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(74, 107, 223);
+      doc.text(`Total BRL: R$ ${totalBRL.toFixed(2).replace('.', ',')}`, 20, y + 15);
+      doc.text(`Total USD: $ ${totalUSD.toFixed(2)}`, 20, y + 25);
+
+      doc.save(`despesas_${new Date().toISOString().slice(0,10)}.pdf`);
+    }
+
+    // Inicialização
+    window.onload = function() {
+      configurarDatasPadrao();
+      configurarDataPadrao();
+      atualizarDados().then(() => {
+        listarDespesas();
+      });
+    };
+  </script>
+</body>
+</html>
